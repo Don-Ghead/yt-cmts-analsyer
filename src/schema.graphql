@@ -1,0 +1,9 @@
+type Query {
+    info: String!
+    topLevelCommentsInfoFromId(id: String!): TopLevelCommentsInfo!
+}
+
+type TopLevelCommentsInfo {
+    commentText: [String]!
+    numComments: Int!
+}
