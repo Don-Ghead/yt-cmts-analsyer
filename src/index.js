@@ -5,7 +5,7 @@ const resolvers = {
     Query: {
         info: () => `This is the API of the youtube comments analyser`,
         // Discard parent as we don't need it and destructure the ID from args param
-        commentsInfoFromId: (_, {id}) => {
+        topLevelCommentsInfoFromId: (_, {id}) => {
             //commentText.then(console.log("I print once the function returns"));
             return getAllCommentTextFromResponse(id);
         },
