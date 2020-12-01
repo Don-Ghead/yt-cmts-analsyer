@@ -4,5 +4,21 @@ type Query {
 }
 
 type TopLevelCommentsInfo {
+    enrichedComments: [commentWithSentiment!]!
     numComments: Int!
+    sentiments: sentimentSummary!
+}
+
+type commentWithSentiment {
+    comment: String!,
+    sentiment: String!
+}
+
+type sentimentSummary {
+    clearlyPositive: Int,
+    slightlyPositive: Int,
+    mixed: Int,
+    neutral: Int,
+    slightlyNegative: Int,
+    clearlyNegative: Int,
 }

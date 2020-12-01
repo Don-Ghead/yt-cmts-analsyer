@@ -1,9 +1,9 @@
+const {enrichCommentsWithSentiment} = require("./sentimentAnalysis");
 const fetch = require("node-fetch");
 const config = require('../../config');
 
 const getAllCommentsFromId = async (id) => {
     let allComments = [];
-    let nextPageToken = "";
     if (id === "") {
         // Temporary, use apollo-errors to create defined errors
         throw new Error("ID can't be empty");
@@ -43,11 +43,11 @@ const getAllCommentsFromId = async (id) => {
 async function getAllCommentsInfoFromResponse(id) {
     console.log(`video ID: ${id}`);
     const allRawComments = await getAllCommentsFromId(id);
-    const commentText = allRawComments.map((item) => {
-        return item.snippet.topLevelComment.snippet.textOriginal
-    });
+    const { summary, enrichedComments } = enrichCommentsWithSentiment(allRawComments)
     return {
-        numComments: commentText.length
+        enrichedComments: enrichedComments,
+        numComments: enrichedComments.length,
+        sentiments: summary,
     }
 }
 
