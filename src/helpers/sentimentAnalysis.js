@@ -26,22 +26,45 @@ const between = (x, min, max) => {
     return x >= min && x <= max;
 }
 
+const incrementSentiment = (value, sentimentCount) => {
+    switch(value) {
+        case CLEARLY_POSITIVE.value:
+            sentimentCount.clearlyPositive++;
+            break;
+        case SLIGHTLY_POSITIVE.value:
+            sentimentCount.slightlyPositive++;
+            break;
+        case MIXED.value:
+            sentimentCount.mixed++;
+            break;
+        case NEUTRAL.value:
+            sentimentCount.neutral++;
+            break;
+        case SLIGHTLY_NEGATIVE.value:
+            sentimentCount.slightlyNegative++;
+            break;
+        case CLEARLY_NEGATIVE.value:
+            sentimentCount.clearlyNegative++;
+            break;
+    }
+}
+
 // { score: 0.313,
 //   numWords: 3,
 //   numHits: 1,
 //   comparative: 0.10433333333333333,
 //   type: 'senticon',
 //   language: 'en' }
-const determineSentiment = async (comment) => {
+const determineSentiment = async (sentimentCount, comment) => {
     let result;
+    let sentiment = {
+        value: 0,
+        text: 'Undetermined'
+    }
     try {
         result = await sentimentEn.getSentiment(comment.snippet.topLevelComment.snippet.textOriginal);
     } catch (err) {
         console.log(err)
-    }
-    let sentiment = {
-        value: 0,
-        text: 'Undetermined'
     }
 
     switch(true)
@@ -66,39 +89,17 @@ const determineSentiment = async (comment) => {
             sentiment = CLEARLY_POSITIVE;
             break;
         default:
-            console.log(`Analysed comment with undetermined sentiment: ${comment}`)
+            console.log(`Analysed comment with undetermined sentiment: ${comment.snippet.topLevelComment.snippet.textOriginal}`)
             console.log(result)
             break;
     }
 
-    console.log(`Gave sentiment of "${ALL_SENTIMENTS.find()}" to comment: ${comment} `);
+    console.log(`Gave sentiment of "${sentiment.text}" to comment: ${comment.snippet.topLevelComment.snippet.textOriginal} `);
+    incrementSentiment(sentiment.value ,sentimentCount)
     return sentiment;
 }
 
-const incrementSentiment = (value, sentimentCount) => {
-    switch(value) {
-        case CLEARLY_POSITIVE.value:
-            sentimentCount.clearlyPositive++;
-            break;
-        case SLIGHTLY_POSITIVE.value:
-            sentimentCount.slightlyPositive++;
-            break;
-        case MIXED.value:
-            sentimentCount.mixed++;
-            break;
-        case NEUTRAL.value:
-            sentimentCount.neutral++;
-            break;
-        case SLIGHTLY_NEGATIVE.value:
-            sentimentCount.slightlyNegative++;
-            break;
-        case CLEARLY_NEGATIVE.value:
-            sentimentCount.clearlyNegative++;
-            break;
-    }
-}
-
-const enrichCommentsWithSentiment = (comments) => {
+const enrichCommentsWithSentiment = async (comments) => {
     const sentimentCount = {
         clearlyPositive: 0,
         slightlyPositive: 0,
@@ -107,17 +108,16 @@ const enrichCommentsWithSentiment = (comments) => {
         slightlyNegative: 0,
         clearlyNegative: 0,
     }
-    const enrichedComments = comments.map(comment => {
-        const sentiment = determineSentiment(comment);
-        incrementSentiment(sentiment.value, sentimentCount)
+    const enrichedComments = Promise.all(comments.map(async comment => {
+        const sentiment = await determineSentiment(sentimentCount, comment);
         return {
-            comment,
-            sentimentText: sentiment.text,
+            comment: comment.snippet.topLevelComment.snippet.textOriginal,
+            sentiment: sentiment.text,
         }
-    })
+    }))
     return {
         summary: sentimentCount,
-        enrichedComments: enrichedComments,
+        enrichedComments: await enrichedComments,
     }
 }
 

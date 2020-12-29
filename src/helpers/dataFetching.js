@@ -40,10 +40,10 @@ const getAllCommentsFromId = async (id) => {
 // Todo avgSentiment - The average sentiment of comments
 // Todo topComments - Returns the top 5 comments (could make this a variable parameter)
 // Todo commonTopics - What, if any, commonality there is between comments
-async function getAllCommentsInfoFromResponse(id) {
+const getAllCommentsInfoFromResponse = async (id) => {
     console.log(`video ID: ${id}`);
     const allRawComments = await getAllCommentsFromId(id);
-    const { summary, enrichedComments } = enrichCommentsWithSentiment(allRawComments)
+    const { summary, enrichedComments } = await enrichCommentsWithSentiment(allRawComments)
     return {
         enrichedComments: enrichedComments,
         numComments: enrichedComments.length,
