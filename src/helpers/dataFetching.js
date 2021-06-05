@@ -2,6 +2,26 @@ const {enrichCommentsWithSentiment} = require("./sentimentAnalysis");
 const fetch = require("node-fetch");
 const config = require('../../config');
 
+const getVideoDetails = async (id) => {
+    const videoDetails = {};
+    if (id === "") {
+        // Temporary, use apollo-errors to create defined errors
+        throw new Error("ID can't be empty");
+    } else {
+        let initialResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=${config.api_key}`);
+        if (initialResponse.ok) {
+            let json = await initialResponse.json();
+            console.log(json.items[0].snippet.title);
+            videoDetails.title = json.items[0].snippet.title;
+        } else {
+            // Should throw an error with the reason instead
+            console.log("HTTP-Error in initial Response: " + initialResponse.status);
+            return []
+        }
+    }
+    return videoDetails;
+}
+
 const getAllCommentsFromId = async (id) => {
     let allComments = [];
     if (id === "") {
@@ -52,3 +72,4 @@ const getAllCommentsInfoFromResponse = async (id) => {
 }
 
 exports.getAllCommentTextFromResponse = getAllCommentsInfoFromResponse;
+exports.getVideoDetails = getVideoDetails;

@@ -18,3 +18,9 @@ on the video/comments.
 This uses GraphQL-Yoga for building the GQL API and node-nlp for doing the sentiment analysis. I would like to use a 
 trained Machine Learning implementation for the NLP side of it in the future but this is a good option for getting the whole 
 project working together for now. 
+
+## Implementation Thoughts
+
+The sentiment analysis part of this currently gets a score for each comment and then assigns it a friendly value to indicate 
+what we think is the sentiment (clearly positive, negative, etc.). Another way of interpreting this data may be to average 
+the scores and show an overall sentiment. Both would be good to interpret the data. 

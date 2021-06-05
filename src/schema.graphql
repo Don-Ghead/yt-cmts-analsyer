@@ -1,6 +1,10 @@
 type Query {
-    info: String!
     topLevelCommentsInfoFromId(id: String!): TopLevelCommentsInfo!
+    videoInfoFromId(id: String!): VideoDetails
+}
+
+type VideoDetails {
+    title: String!
 }
 
 type TopLevelCommentsInfo {
