@@ -1,6 +1,5 @@
-const {getVideoDetails} = require("./helpers/dataFetching");
 const {GraphQLServer} = require('graphql-yoga');
-const {getAllCommentTextFromResponse} = require('./helpers/dataFetching');
+const {getAllCommentTextFromResponse, getVideoDetails} = require('./helpers/resolverImpl');
 
 const resolvers = {
     Query: {
@@ -10,7 +9,7 @@ const resolvers = {
             return getAllCommentTextFromResponse(id);
         },
 
-        videoInfoFromId: (_, {id}) => {
+        videoDetailsFromId: (_, {id}) => {
             return getVideoDetails(id);
         }
     }
